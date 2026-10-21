@@ -12,7 +12,7 @@ import (
 )
 
 // Platform is the SDK and its version in the "platform" query parameter of every request.
-const Platform = "go-sdk.1.2.3"
+const Platform = "go-sdk.1.2.4"
 
 // APIClient is the low level transport: every API method is a POST request with a JSON body that returns JSON.
 type APIClient struct {
