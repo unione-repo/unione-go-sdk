@@ -121,6 +121,9 @@ func NewClientWithConfig(config *client.Configuration) *Client {
 	}
 }
 
+// APIError is the error of every method (client.APIError): errors.As(err, &apiErr).
+type APIError = client.APIError
+
 // String returns a pointer to v, for optional fields of the requests.
 func String(v string) *string {
 	return &v

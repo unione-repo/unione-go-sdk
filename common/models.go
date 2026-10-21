@@ -192,3 +192,17 @@ type SuccessResponse struct {
 	// Allowed values: `success`.
 	Status string `json:"status,omitempty"`
 }
+
+// HTMLBody returns an HTML body, with an optional plain-text part.
+func HTMLBody(html string, plaintext ...string) *BodyObject {
+	body := &BodyObject{HTML: &html}
+	if len(plaintext) > 0 {
+		body.Plaintext = &plaintext[0]
+	}
+	return body
+}
+
+// TextBody returns a plain-text body.
+func TextBody(plaintext string) *BodyObject {
+	return &BodyObject{Plaintext: &plaintext}
+}

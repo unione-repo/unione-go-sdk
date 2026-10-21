@@ -2,7 +2,12 @@
 
 package email
 
-import "github.com/unione-repo/unione-go-sdk/common"
+import (
+	"regexp"
+	"strings"
+
+	"github.com/unione-repo/unione-go-sdk/common"
+)
 
 // EmailSendRequest
 type EmailSendRequest struct {
@@ -237,4 +242,36 @@ type EmailSubscribeRequest struct {
 
 	// Recipient’s email. (Field alias "email_address_to" is supported, too).
 	ToEmail string `json:"to_email"`
+}
+
+// recipientAddress is "Name <email>" (RecipientFromAddress).
+var recipientAddress = regexp.MustCompile(`(?s)^(.*)<([^>]+)>$`)
+
+// RecipientFromAddress returns a recipient from "email" or "Name <email>": the name goes to the to_name
+// substitution (the name in the "To" header), then the substitutions, if any, are added.
+func RecipientFromAddress(address string, substitutions ...map[string]string) MessageObjectRecipientsItem {
+	email, name := strings.TrimSpace(address), ""
+	if match := recipientAddress.FindStringSubmatch(email); match != nil {
+		email, name = strings.TrimSpace(match[2]), strings.Trim(strings.TrimSpace(match[1]), `"`)
+	}
+	var merged map[string]string
+	if name != "" {
+		merged = map[string]string{"to_name": name}
+	}
+	for _, more := range substitutions {
+		for key, value := range more {
+			if merged == nil {
+				merged = map[string]string{}
+			}
+			merged[key] = value
+		}
+	}
+	return MessageObjectRecipientsItem{Email: email, Substitutions: merged}
+}
+
+// WithMetadata returns a copy of the recipient with the metadata (it comes back in the webhook events of the
+// recipient): RecipientFromAddress("Alex <alex@example.com>").WithMetadata(map[string]string{"user_id": "42"}).
+func (r MessageObjectRecipientsItem) WithMetadata(metadata map[string]string) MessageObjectRecipientsItem {
+	r.Metadata = metadata
+	return r
 }

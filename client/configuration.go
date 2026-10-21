@@ -57,7 +57,7 @@ func NewConfiguration(apiKey string) *Configuration {
 	return &Configuration{
 		APIKey:     apiKey,
 		BaseURL:    DefaultBaseURL,
-		UserAgent:  "unione-go-sdk/1.1.3",
+		UserAgent:  "unione-go-sdk/1.2.3",
 		HTTPClient: &http.Client{Timeout: 30 * time.Second},
 	}
 }
